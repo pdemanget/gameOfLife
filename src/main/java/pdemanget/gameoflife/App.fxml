@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.web.WebView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.canvas.Canvas?>
+<!-- GAME OF LIFE -->
+
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="pdemanget.gameoflife.AppController">
+	<HBox >
+	<!--
+		<Button onAction="#back">&lt;</Button>
+		<Button onAction="#next">&gt;</Button>
+		<TextField fx:id="text" prefWidth="1400" onAction="#go"></TextField>
+		<Button onAction="#go">=</Button>
+		-->
+	</HBox>
+	<Canvas fx:id="canvas" ></Canvas>
+</VBox>
+

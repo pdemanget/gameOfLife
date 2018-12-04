@@ -1,0 +1,4 @@
+artifact: gol:gol
+# just an example of dependencies, feel free to uncomment
+#compile:
+# - "pl.droidsonroids.yaml:snakeyaml:1.18.2"
