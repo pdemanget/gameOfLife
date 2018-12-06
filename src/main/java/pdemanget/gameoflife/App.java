@@ -6,8 +6,11 @@ import java.util.ResourceBundle;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
@@ -20,10 +23,22 @@ import javafx.stage.Stage;
 public class App extends Application {
 
 	private static final String LOGO = "/style/logo.png";
-	//private ResourceBundle bundle = ResourceBundle.getBundle("i18n/app", Locale.getDefault());
+	// private ResourceBundle bundle = ResourceBundle.getBundle("i18n/app",
+	// Locale.getDefault());
 
 	public static void main(String[] args) {
 		launch(args);
+	}
+
+	public void start0(Stage primaryStage) {
+		primaryStage.setTitle("Drawing Operations Test");
+		Group root = new Group();
+		Canvas canvas = new Canvas(300, 250);
+		GraphicsContext gc = canvas.getGraphicsContext2D();
+		new AppController().drawShapes(gc);
+		root.getChildren().add(canvas);
+		primaryStage.setScene(new Scene(root));
+		primaryStage.show();
 	}
 
 	public void start(Stage stage) throws IOException {
@@ -32,7 +47,7 @@ public class App extends Application {
 		metaApp.setLogo(LOGO);
 		metaApp.setScreen("App.fxml");
 		metaApp.setTitle("Game of life");
-		
+
 //	    Injector.registerExistingAndInject (this);
 //	    Injector.setModelOrService(this.getClass (),this);
 		stage.setTitle(metaApp.getTitle());

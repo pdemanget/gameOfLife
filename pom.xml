@@ -83,6 +83,12 @@
 			<artifactId>afterburner.fx</artifactId>
 			<version>1.6.2</version>
 		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
 		<!-- Support du SVG -->
 <!-- 		<dependency> -->
 <!-- 			<groupId>de.codecentric.centerdevice</groupId> -->
