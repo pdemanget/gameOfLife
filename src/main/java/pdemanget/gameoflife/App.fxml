@@ -8,26 +8,40 @@
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.Group?>
 <?import java.net.URL?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.AnchorPane?>
 
 <!-- GAME OF LIFE -->
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="pdemanget.gameoflife.AppController">
 	<HBox>
-		<TextField fx:id="text" prefWidth="1400" onAction="#go"></TextField>
-		<!-- <Button onAction="#back">&lt;</Button> <Button onAction="#next">&gt;</Button> 
-			<TextField fx:id="text" prefWidth="1400" onAction="#go"></TextField> <Button 
-			onAction="#go">=</Button> -->
+		<MenuBar>
+			<Menu text="File">
+				<MenuItem text="Open" onAction="#open"></MenuItem>
+				<MenuItem text="Save" onAction="#save"></MenuItem>
+			</Menu>
+		</MenuBar>
+		<Button onAction="#next" text="Next step" />
+		<Button onAction="#go" text="Play" />
+		<Button onAction="#pause" text="Pause" />
+		<Button onAction="#clear" text="Clear" />
 	</HBox>
-	<Group VBox.vgrow="ALWAYS">
-		<Canvas fx:id="canvas" width="800" height="600"></Canvas>
-
-	</Group>
-
+	<StackPane>
+		<ScrollPane fx:id="scrollPane">
+			<VBox>
+				<Canvas fx:id="canvas" width="1920" height="1920"></Canvas>
+			</VBox>
+		</ScrollPane>
+		<Label fx:id="count" translateX="-840" translateY="-440"></Label>
+	</StackPane>
 	<stylesheets>
 		<URL value="@App.css" />
 	</stylesheets>
-
-
 </VBox>
 

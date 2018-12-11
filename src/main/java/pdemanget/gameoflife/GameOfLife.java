@@ -1,15 +1,18 @@
 package pdemanget.gameoflife;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.application.Platform;
+import javafx.beans.property.SimpleIntegerProperty;
 import pdemanget.gameoflife.utils.IntStack;
 
 public class GameOfLife {
 	final long[][] img;
+	SimpleIntegerProperty step = new SimpleIntegerProperty();
 	int myColor = 0xFFFFFF;
 	int size;
-	int step = 0;
 	
 	IntStack added = new IntStack();
 	IntStack removed = new IntStack();
@@ -28,6 +31,7 @@ public class GameOfLife {
 		initValue();
 		GameOfLifeListener dataListener = (color,i,j)->img[i][j]=color;
 		
+		// Listener is a composite Listner wrapper of all listeners
 		listener = (color,i,j)->listeners.forEach(l->l.changed(color, i, j));
 		listeners.add(dataListener);
 	}
@@ -35,41 +39,31 @@ public class GameOfLife {
 	public void addListener(GameOfLifeListener listener) {
 		listeners.add(listener);
 	}
-
+	
 	private void initValue() {
-		// TODO make parametrable
+		BoardFile board = new BoardFile(myColor);
+		try {
+			board.loadResource("/game.gol.txt");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return;
+		}
+		loadBoard(board);
+	}
+
+	public void loadBoard(BoardFile board) {
+		int x=(getWidth()-board.getWidth())/2;
+		int y=(getHeight()-board.getHeight())/2;
 		
-		img[11][ 9] = myColor;
-		img[11][10] = myColor;
-		img[11][11] = myColor;
-		img[11][12] = myColor;
 		
-		
-		img[10][ 9] = myColor;
-		img[10][10] = myColor;
-		img[10][11] = myColor;
-		img[10][12] = myColor;
-		
-		img[8][10] = myColor;
-		img[8][11] = myColor;
-		img[8][12] = myColor;
-		img[8][13] = myColor;
+		for (int i = 0; i < board.getWidth(); i++) {
+			for (int j = 0; j < board.getHeight(); j++) {
+				img[x+i][y+j] = board.get(i,j);
+			}
+		}
 	}
 
 	
-	
-	private void initValue2() {
-		// TODO make parametrable
-		img[10][ 9] = myColor;
-		img[10][10] = myColor;
-		img[10][11] = myColor;
-		img[10][12] = myColor;
-		
-		img[8][10] = myColor;
-		img[8][11] = myColor;
-		img[8][12] = myColor;
-		img[8][13] = myColor;
-	}
 
 	protected int count(int x, int y) {
 		int count = 0;
@@ -96,14 +90,16 @@ public class GameOfLife {
 				}
 			}
 		}
-		step++;
+		Platform.runLater(()->{
+			step.set(step.get()+1);
+		});
 		while(added.size()>0) {
 			listener.changed(myColor, added.popInt(), added.popInt());
 		}
 		while(removed.size()>0) {
 			listener.changed(0, removed.popInt(), removed.popInt());
 		}
-		return step;
+		return getStep();
 	}
 
 	private void remove(int i, int j) {
@@ -119,6 +115,8 @@ public class GameOfLife {
 	public long[][] getImg() {
 		return img;
 	}
+	
+	
 	
 	public String toString() {
 		StringBuilder res = new StringBuilder();
@@ -139,5 +137,42 @@ public class GameOfLife {
 		res.append(line);
 		return res.toString();
 	}
+
+	public final SimpleIntegerProperty countProperty() {
+		return this.step;
+	}
+	
+	public int getWidth() {
+		return size;
+	}
+	
+	public int getHeight() {
+		return size;
+	}
+
+	public final int getCount() {
+		return this.countProperty().get();
+	}
+	
+
+	public final void setCount(final int count) {
+		this.countProperty().set(count);
+	}
+
+	public final SimpleIntegerProperty stepProperty() {
+		return this.step;
+	}
+	
+
+	public final int getStep() {
+		return this.stepProperty().get();
+	}
+	
+
+	public final void setStep(final int step) {
+		this.stepProperty().set(step);
+	}
+	
+	
 
 }

@@ -1,4 +1,17 @@
-artifact: gol:gol
-# just an example of dependencies, feel free to uncomment
-#compile:
-# - "pl.droidsonroids.yaml:snakeyaml:1.18.2"
+artifact: pdemanget:gameoflife
+description: Game of life in JavaFX
+name: Game of life in JavaFX
+build:
+ resources:
+   - directory: ${project.build.sourceDirectory}
+     includes:
+      - **/*.fxml
+   - directory: ${project.basedir}/src/main/resources
+     includes:
+      - **/*
+compile:
+ - org.aerofx:aerofx:0.2
+ #	to use @Inject :
+ - com.airhacks:afterburner.fx:1.6.2
+test:
+ - junit:junit:4.12

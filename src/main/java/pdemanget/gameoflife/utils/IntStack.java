@@ -15,10 +15,23 @@ public class IntStack extends AbstractQueue<Integer>{
 	}
 	
 	public void addInt(int value) {
+		ensureCapacity(size);
 		data[size]=value;
 		size++;
 	}
 	
+	private void ensureCapacity(int size2) {
+		if(data.length <=size2) grow(data.length+SIZE);
+	}
+
+	private void grow(int newLength) {
+		int[] copy = new int[newLength];
+		System.arraycopy(data, 0, copy, 0,
+                Math.min(data.length, newLength));
+		data = copy;
+		
+	}
+
 	public int popInt() {
 		size--;
 		return data[size];

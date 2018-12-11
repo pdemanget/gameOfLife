@@ -1,16 +1,12 @@
 package pdemanget.gameoflife;
 
 import java.io.IOException;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.net.URL;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
@@ -23,6 +19,9 @@ import javafx.stage.Stage;
 public class App extends Application {
 
 	private static final String LOGO = "/style/logo.png";
+	private static App instance;
+	private Stage stage;
+	AppController appController;
 	// private ResourceBundle bundle = ResourceBundle.getBundle("i18n/app",
 	// Locale.getDefault());
 
@@ -30,19 +29,10 @@ public class App extends Application {
 		launch(args);
 	}
 
-	public void start0(Stage primaryStage) {
-		primaryStage.setTitle("Drawing Operations Test");
-		Group root = new Group();
-		Canvas canvas = new Canvas(300, 250);
-		GraphicsContext gc = canvas.getGraphicsContext2D();
-		new AppController().drawShapes(gc);
-		root.getChildren().add(canvas);
-		primaryStage.setScene(new Scene(root));
-		primaryStage.show();
-	}
 
 	public void start(Stage stage) throws IOException {
-
+		instance=this;
+		this.stage=stage;
 		MetaApp metaApp = new MetaApp();
 		metaApp.setLogo(LOGO);
 		metaApp.setScreen("App.fxml");
@@ -53,7 +43,11 @@ public class App extends Application {
 		stage.setTitle(metaApp.getTitle());
 
 		stage.getIcons().add(new Image(metaApp.getLogo()));
-		Parent root = FXMLLoader.load(getClass().getResource(metaApp.getScreen()));
+		
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(metaApp.getScreen()));
+		//Parent root = FXMLLoader.load(getClass().getResource(metaApp.getScreen()));
+		Parent root = fxmlLoader.load();
+		appController = fxmlLoader.getController();
 		Scene scene = new Scene(root);
 		stage.setMaximized(true);
 		stage.setScene(scene);
@@ -64,5 +58,14 @@ public class App extends Application {
 	@Override
 	public void stop() {
 		System.out.println("exiting");
+		appController.stop();
+	}
+
+	public static App getInstance() {
+		return instance;
+	}
+
+	public Stage getStage() {
+		return stage;
 	}
 }

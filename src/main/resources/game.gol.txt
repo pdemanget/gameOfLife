@@ -1,0 +1,13 @@
+# Example grid init
+# syntax:
+# # at the beginning  are for comments
+# " " and X are empty/filled cells
+# +-| are just for presentation, thee are ignored.
+#  (this grid Will converge in approx  generation)
++--------------------------+
+|             XX           |
+|           X XX           |
+|           X XX           |
+|           X XX           |
+|           X              |
++--------------------------+
