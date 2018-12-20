@@ -1,5 +1,6 @@
 package pdemanget.gameoflife;
 
+import static java.util.Arrays.asList;
 import static pdemanget.gameoflife.utils.ByteUtils.longToBytesBE;
 
 import java.io.File;
@@ -13,26 +14,25 @@ import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.converter.NumberStringConverter;
-import javafx.scene.control.ScrollPane;
 
 public class AppController {
-	public static int PERIOD = 30;
+	public static int PERIOD = 200;
 	@FXML
 	Canvas canvas;
 	@FXML
 	Label count;
 	@FXML
 	TextField text;
-	int PIXEL_SIZE = 10;
-	int SCREENSIZE = 1920;
-	int GAME_SIZE = SCREENSIZE / PIXEL_SIZE;
+	int PIXEL_SIZE = 5;
+	int GAME_SIZE = 256;
+	int SCREENSIZE = GAME_SIZE*PIXEL_SIZE;
 	GameOfLife game = new GameOfLife(GAME_SIZE);
 	ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 	ScheduledFuture<?> scheduled = null;
@@ -43,14 +43,16 @@ public class AppController {
 	public void initialize() {
 
 		// canvas.getGraphicsContext2D().fill
+		canvas.setWidth(SCREENSIZE);
+		canvas.setHeight(SCREENSIZE);
 		GraphicsContext gContext = canvas.getGraphicsContext2D();
 		gContext.setFill(Color.GREY);
 		gContext.fillRect(0, 0, SCREENSIZE, SCREENSIZE);
-		game = new GameOfLife(GAME_SIZE);
-		drawGrid();
-		game.addListener(this::drawPoint);
-		count.textProperty().bindBidirectional(game.stepProperty(), new NumberStringConverter());
 		scrollPane.setVvalue(0.5);
+		scrollPane.setHvalue(0.5);
+		clear();
+		game.loadExample();
+		drawGrid();
 	}	
 
 	private void drawGrid() {
@@ -64,9 +66,9 @@ public class AppController {
 	private void drawPoint(long color, int i, int j) {
 		byte[] colors = longToBytesBE(color);
 		GraphicsContext gContext = canvas.getGraphicsContext2D();
+		int BORDER_WIDTH = 1;
 		gContext.setFill(Color.rgb(colors[0] & 0xFF, colors[1] & 0xFF, colors[2] & 0xFF));
-		int PIXEL_SIZE = 10;
-		gContext.fillRect(1 + i * PIXEL_SIZE, 1 + j * PIXEL_SIZE, 8, 8);
+		gContext.fillRect(BORDER_WIDTH + i * PIXEL_SIZE, BORDER_WIDTH + j * PIXEL_SIZE, PIXEL_SIZE-BORDER_WIDTH, PIXEL_SIZE-BORDER_WIDTH);
 
 	}
 
@@ -103,14 +105,20 @@ public class AppController {
 	public void next() {
 		game.nextStep();
 	}
+	
 
 	@FXML
 	public void open() {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Open Resource File");
 		fileChooser.setInitialDirectory(initialDirectory);
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Game of life file", "*.gol.txt"),
-				new FileChooser.ExtensionFilter("All Files", "*.*"));
+		fileChooser.getExtensionFilters().addAll(
+				new FileChooser.ExtensionFilter("All Files", "*.*"),
+				new FileChooser.ExtensionFilter(".lif or .life 1.05", "*.life", "*.lif"),
+				new FileChooser.ExtensionFilter(".cell", "*.cell", "*.cells"),
+				new FileChooser.ExtensionFilter(".rle", "*.rle"),				
+				new FileChooser.ExtensionFilter("gol", "*.gol", "*.gol.txt")
+				);
 		Stage stage = App.getInstance().getStage();
 		File file = fileChooser.showOpenDialog(stage);
 		if(file.isDirectory()) {
@@ -121,7 +129,12 @@ public class AppController {
 			}
 		}
 		if (file != null) {
-			BoardFile board= new BoardFile(0xFFFFFF);
+			String ext = file.getName().substring(file.getName().lastIndexOf('.')+1);
+			BoardFile board= "gol".equals(ext)?BoardFile.getGolBoardFile():
+				asList("cell","cells").contains(ext)?BoardFile.getCellBoardFile():
+				asList("lif","life").equals(ext)?BoardFile.getLifeBoardFile():
+				"rle".equals(ext)?BoardFile.getRleBoardFile():
+				BoardFile.getGolBoardFile();
 			try {
 				board.loadFile(file.toPath());
 			} catch (FileNotFoundException e) {
@@ -145,7 +158,11 @@ public class AppController {
 	}
 	@FXML public void clear() {
 		pause();
-		initialize();
+		game = new GameOfLife(GAME_SIZE);
+		drawGrid();
+		game.addListener(this::drawPoint);
+		count.textProperty().bindBidirectional(game.stepProperty(), new NumberStringConverter());
+
 	}
 
 

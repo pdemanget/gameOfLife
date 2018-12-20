@@ -1,0 +1,8 @@
+# 5 cells form the most impressive developpment
++--------------------------+
+|                          |
+|             XX           |
+|            XX            |
+|             X            |
+|                          |
++--------------------------+

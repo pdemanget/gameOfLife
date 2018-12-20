@@ -10,14 +10,41 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Ascii file loading
+ * @author pdemanget
+ *
+ */
 public class BoardFile {
 
-	private final List<List<Integer>> board = new ArrayList<>();
-	private int color;
-	int width = 0;
+	protected final List<List<Integer>> board = new ArrayList<>();
+	protected int color;
+	protected int width = 0;
+	protected String dead;
+	protected String alive;
+	protected String comment;
+	
+	public static final BoardFile getLifeBoardFile() {
+		return new BoardFile(".","*","#",0xFFFFFF); 
+	}
+	
+	public static final BoardFile getCellBoardFile() {
+		return new BoardFile(".","O","!",0xFFFFFF); 
+	}
 
-	public BoardFile(int color) {
-		super();
+	public static final BoardFile getGolBoardFile() {
+		return new BoardFile(" ","Xx","#",0xFFFFFF); 
+	}
+	
+	public static final BoardFile getRleBoardFile() {
+		return new RleBoardFile(0xFFFFFF); 
+	}
+
+	
+	public BoardFile(String dead,String alive, String comment, int color) {
+		this.dead=dead;
+		this.alive=alive;
+		this.comment=comment;
 		this.color = color;
 	}
 
@@ -33,16 +60,16 @@ public class BoardFile {
 		try (BufferedReader reader = new BufferedReader(preader)) {
 			String line = null;
 			while ((line = reader.readLine()) != null) {
-				if (line.startsWith("#"))
+				if (line.startsWith(comment))
 					continue;
 				List<Integer> pixLine = new ArrayList<>(line.length());
 				board.add(pixLine);
 				char[] chars = new char[line.length()];
 				line.getChars(0, line.length(), chars, 0);
 				for (int i = 0; i < chars.length; i++) {
-					if (chars[i] == 'x' || chars[i] == 'X') {
+					if ( alive.indexOf(chars[i]) > -1) {
 						pixLine.add(color);
-					} else if (chars[i] == ' ') {
+					} else if (dead.indexOf(chars[i]) > -1) {
 						pixLine.add(0);
 					} else if (chars[i] != '|' && chars[i] != '-' && chars[i] != '+') {
 						// Throw SyntaxError

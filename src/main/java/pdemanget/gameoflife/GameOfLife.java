@@ -28,7 +28,6 @@ public class GameOfLife {
 			img[i] = new long[size];
 		}
 		this.size = size;
-		initValue();
 		GameOfLifeListener dataListener = (color,i,j)->img[i][j]=color;
 		
 		// Listener is a composite Listner wrapper of all listeners
@@ -40,8 +39,8 @@ public class GameOfLife {
 		listeners.add(listener);
 	}
 	
-	private void initValue() {
-		BoardFile board = new BoardFile(myColor);
+	public void loadExample() {
+		BoardFile board = BoardFile.getGolBoardFile();
 		try {
 			board.loadResource("/game.gol.txt");
 		} catch (FileNotFoundException e) {

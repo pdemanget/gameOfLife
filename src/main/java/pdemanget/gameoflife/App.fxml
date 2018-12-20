@@ -35,7 +35,7 @@
 	<StackPane>
 		<ScrollPane fx:id="scrollPane">
 			<VBox>
-				<Canvas fx:id="canvas" width="1920" height="1920"></Canvas>
+				<Canvas fx:id="canvas" width="10000" height="10000"></Canvas>
 			</VBox>
 		</ScrollPane>
 		<Label fx:id="count" translateX="-840" translateY="-440"></Label>
