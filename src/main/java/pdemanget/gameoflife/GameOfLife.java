@@ -13,32 +13,31 @@ public class GameOfLife {
 	SimpleIntegerProperty step = new SimpleIntegerProperty();
 	int myColor = 0xFFFFFF;
 	int size;
-	
+
 	IntStack added = new IntStack();
 	IntStack removed = new IntStack();
 
 	// listener on pixels change (xyc)
 	GameOfLifeListener listener;
 	List<GameOfLifeListener> listeners = new ArrayList<>();
-	
-	
+
 	public GameOfLife(int size) {
 		img = new long[size][];
 		for (int i = size - 1; i >= 0; i--) {
 			img[i] = new long[size];
 		}
 		this.size = size;
-		GameOfLifeListener dataListener = (color,i,j)->img[i][j]=color;
-		
+		GameOfLifeListener dataListener = (color, i, j) -> img[i][j] = color;
+
 		// Listener is a composite Listner wrapper of all listeners
-		listener = (color,i,j)->listeners.forEach(l->l.changed(color, i, j));
+		listener = (color, i, j) -> listeners.forEach(l -> l.changed(color, i, j));
 		listeners.add(dataListener);
 	}
-	
+
 	public void addListener(GameOfLifeListener listener) {
 		listeners.add(listener);
 	}
-	
+
 	public void loadExample() {
 		BoardFile board = BoardFile.getGolBoardFile();
 		try {
@@ -51,18 +50,15 @@ public class GameOfLife {
 	}
 
 	public void loadBoard(BoardFile board) {
-		int x=(getWidth()-board.getWidth())/2;
-		int y=(getHeight()-board.getHeight())/2;
-		
-		
+		int x = (getWidth() - board.getWidth()) / 2;
+		int y = (getHeight() - board.getHeight()) / 2;
+
 		for (int i = 0; i < board.getWidth(); i++) {
 			for (int j = 0; j < board.getHeight(); j++) {
-				img[x+i][y+j] = board.get(i,j);
+				img[x + i][y + j] = board.get(i, j);
 			}
 		}
 	}
-
-	
 
 	protected int count(int x, int y) {
 		int count = 0;
@@ -70,7 +66,7 @@ public class GameOfLife {
 			for (int j = -1; j < 2; j++) {
 				if (i == 0 && j == 0)
 					continue;
-				if (img[x+i][y+j] == myColor)
+				if (img[x + i][y + j] == myColor)
 					count++;
 			}
 		}
@@ -81,28 +77,28 @@ public class GameOfLife {
 		for (int i = size - 2; i >= 1; i--) {
 			for (int j = size - 2; j >= 1; j--) {
 				int count = count(i, j);
-				if (img[i][j] == myColor && (count < 2 || count > 3) ) {
-					remove(i,j);
+				if (img[i][j] == myColor && (count < 2 || count > 3)) {
+					remove(i, j);
 				}
 				if (img[i][j] == 0 && count == 3) {
-					add(i,j);
+					add(i, j);
 				}
 			}
 		}
-		Platform.runLater(()->{
-			step.set(step.get()+1);
+		Platform.runLater(() -> {
+			step.set(step.get() + 1);
 		});
-		while(added.size()>0) {
+		while (added.size() > 0) {
 			listener.changed(myColor, added.popInt(), added.popInt());
 		}
-		while(removed.size()>0) {
+		while (removed.size() > 0) {
 			listener.changed(0, removed.popInt(), removed.popInt());
 		}
 		return getStep();
 	}
 
 	private void remove(int i, int j) {
-		removed.addInt(j);		
+		removed.addInt(j);
 		removed.addInt(i);
 	}
 
@@ -114,24 +110,22 @@ public class GameOfLife {
 	public long[][] getImg() {
 		return img;
 	}
-	
-	
-	
-	public String toString() {
+
+	public String printBoardForDebug() {
 		StringBuilder res = new StringBuilder();
-		String line="";
+		String line = "";
 		for (int i = size + 1; i >= 0; i--) {
-			line+='-';
+			line += '-';
 		}
 		res.append(line);
 		res.append('\n');
 		for (int i = size - 1; i >= 0; i--) {
 			res.append("|");
 			for (int j = size - 1; j >= 0; j--) {
-				res.append(img[i][j]==0?' ':'X');
+				res.append(img[i][j] == 0 ? ' ' : 'X');
 			}
 			res.append("|\n");
-			
+
 		}
 		res.append(line);
 		return res.toString();
@@ -140,11 +134,11 @@ public class GameOfLife {
 	public final SimpleIntegerProperty countProperty() {
 		return this.step;
 	}
-	
+
 	public int getWidth() {
 		return size;
 	}
-	
+
 	public int getHeight() {
 		return size;
 	}
@@ -152,7 +146,6 @@ public class GameOfLife {
 	public final int getCount() {
 		return this.countProperty().get();
 	}
-	
 
 	public final void setCount(final int count) {
 		this.countProperty().set(count);
@@ -161,17 +154,88 @@ public class GameOfLife {
 	public final SimpleIntegerProperty stepProperty() {
 		return this.step;
 	}
-	
 
 	public final int getStep() {
 		return this.stepProperty().get();
 	}
-	
 
 	public final void setStep(final int step) {
 		this.stepProperty().set(step);
 	}
+
+	public GameOfLifeListener getListener() {
+		return listener;
+	}
+
+	/**
+	 * extract board from running game.
+	 * 
+	 * @param board
+	 */
+	public void saveBoard(BoardFile board) {
+		int x0 = getColStart();
+		int x1 = getColEnd()+1;
+		int y0 = getLineStart();
+		int y1 = getLineEnd()+1;
+		if(x0 == -1) {
+			throw new UnsupportedOperationException("game is empty");
+		}
+		
+		board.init(x1-x0,y1-y0);
+		for (int i = x0; i < x1; i++) {
+			for (int j = y0; j < y1; j++) {
+				board.set(i-x0, j-y0,(int) img[ i][ j]); 
+			}
+		}
+
+	}
+
+	private int getLineStart() {
+		for (int j = 0; j < this.getHeight(); j++) {
+			for (int i = 0; i < this.getWidth(); i++) {
+				if (img[i][j] != 0) {
+					return j;
+				}
+			}
+		}
+		// is all empty
+		return this.getHeight();
+	}
 	
-	
+	private int getLineEnd() {
+		for (int j = this.getHeight()-1;j >= 0;  j--) {
+			for (int i = 0; i < this.getWidth(); i++) {
+				if (img[i][j] != 0) {
+					return j;
+				}
+			}
+		}
+		// is all empty
+		return this.getHeight();
+	}
+
+	private int getColStart() {
+		for (int i = 0; i < this.getWidth(); i++) {
+			for (int j = 0; j < this.getHeight(); j++) {
+				if (img[i][j] != 0) {
+					return i;
+				}
+			}
+		}
+		// is all empty
+		return -1;
+	}
+
+	private int getColEnd() {
+		for (int i = this.getWidth() - 1; i >= 0; i--) {
+			for (int j = 0; j < this.getHeight(); j++) {
+				if (img[i][j] != 0) {
+					return i;
+				}
+			}
+		}
+		// is all empty
+		return 0;
+	}
 
 }

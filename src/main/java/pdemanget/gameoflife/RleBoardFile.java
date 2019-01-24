@@ -4,11 +4,20 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Reader for rle format. Simple ascii format
+ * Reader for rle format. Simple ascii format.
+ * 
+ * Simple LL1 parser using theses token:
+ *  b: dead cell
+ *  o: alive cell
+ *  <int>: count of next token
+ *  $: line return (next line)
+ *  !: end of stream
+ * 
  * 
  * #N 8-engine Cordership #O Dean Hickerson #C
  * http://conwaylife.com/wiki/8-engine_Cordership #C
@@ -115,5 +124,13 @@ public class RleBoardFile extends BoardFile {
 			e.printStackTrace();
 		}
 	}
+
+	@Override
+	public void saveFile(Path path) throws IOException {
+		// TODO Auto-generated method stub
+		super.saveFile(path);
+	}
+	
+	
 
 }

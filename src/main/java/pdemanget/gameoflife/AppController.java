@@ -5,6 +5,9 @@ import static pdemanget.gameoflife.utils.ByteUtils.longToBytesBE;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -13,6 +16,9 @@ import java.util.concurrent.TimeUnit;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
@@ -23,6 +29,7 @@ import javafx.stage.Stage;
 import javafx.util.converter.NumberStringConverter;
 
 public class AppController {
+	private static final boolean VIDEO_INVERSE = true;
 	public static int PERIOD = 200;
 	@FXML
 	Canvas canvas;
@@ -50,9 +57,22 @@ public class AppController {
 		gContext.fillRect(0, 0, SCREENSIZE, SCREENSIZE);
 		scrollPane.setVvalue(0.5);
 		scrollPane.setHvalue(0.5);
+		scrollPane.setOnScroll(e->{
+			double sceneX = e.getSceneX();
+			System.out.println(e);
+		});
 		clear();
 		game.loadExample();
 		drawGrid();
+		
+		canvas.setOnMouseClicked(e->{
+			System.out.println(e);
+			int i= (int)(e.getX() /PIXEL_SIZE);
+			int j= (int)(e.getY()/PIXEL_SIZE);
+//			int i= (int)(e.getSceneX() /PIXEL_SIZE);
+//			int j= (int)(e.getSceneY()/PIXEL_SIZE);
+			game.getListener().changed(game.getImg()[i][j]==0?game.myColor:0,i,j);
+		});
 	}	
 
 	private void drawGrid() {
@@ -64,6 +84,7 @@ public class AppController {
 	}
 
 	private void drawPoint(long color, int i, int j) {
+		if( VIDEO_INVERSE) color = ~color & 0xFFFFFF;
 		byte[] colors = longToBytesBE(color);
 		GraphicsContext gContext = canvas.getGraphicsContext2D();
 		int BORDER_WIDTH = 1;
@@ -109,18 +130,7 @@ public class AppController {
 
 	@FXML
 	public void open() {
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Open Resource File");
-		fileChooser.setInitialDirectory(initialDirectory);
-		fileChooser.getExtensionFilters().addAll(
-				new FileChooser.ExtensionFilter("All Files", "*.*"),
-				new FileChooser.ExtensionFilter(".lif or .life 1.05", "*.life", "*.lif"),
-				new FileChooser.ExtensionFilter(".cell", "*.cell", "*.cells"),
-				new FileChooser.ExtensionFilter(".rle", "*.rle"),				
-				new FileChooser.ExtensionFilter("gol", "*.gol", "*.gol.txt")
-				);
-		Stage stage = App.getInstance().getStage();
-		File file = fileChooser.showOpenDialog(stage);
+		File file = fileChoose();
 		if(file.isDirectory()) {
 			initialDirectory = file;
 		}else {
@@ -136,7 +146,9 @@ public class AppController {
 				"rle".equals(ext)?BoardFile.getRleBoardFile():
 				BoardFile.getGolBoardFile();
 			try {
-				board.loadFile(file.toPath());
+				Path path = file.toPath();
+				board.loadFile(path);
+				App.getInstance().getStage().setTitle(file.getName());
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -146,9 +158,61 @@ public class AppController {
 
 	}
 
+	private File fileChoose() {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Open Resource File");
+		fileChooser.setInitialDirectory(initialDirectory);
+		fileChooser.getExtensionFilters().addAll(
+				new FileChooser.ExtensionFilter("All Files", "*.*"),
+				new FileChooser.ExtensionFilter(".lif or .life 1.05", "*.life", "*.lif"),
+				new FileChooser.ExtensionFilter(".cell", "*.cell", "*.cells"),
+				new FileChooser.ExtensionFilter(".rle", "*.rle"),				
+				new FileChooser.ExtensionFilter("gol", "*.gol", "*.gol.txt")
+				);
+		Stage stage = App.getInstance().getStage();
+		File file = fileChooser.showOpenDialog(stage);
+		return file;
+	}
+
 	@FXML
 	public void save() {
-		System.out.println(game.toString());
+		File file = fileChoose();
+		if(file.isDirectory()) {
+			initialDirectory = file;
+		}else {
+			if(file.getParentFile().exists() && file.getParentFile().isDirectory()) {
+				initialDirectory = file.getParentFile();	
+			}
+		}
+		if (file != null) {
+			if (file.exists()) {
+				Alert alert = new Alert(AlertType.WARNING,"File "+file+" exists, do you want to overwrite?", 
+						ButtonType.OK,ButtonType.CANCEL);
+				Optional<ButtonType> showAndWait = alert.showAndWait();
+				if(! showAndWait.orElse(ButtonType.CANCEL).equals(ButtonType.OK)) {
+					return;
+				}
+			}
+			String ext = file.getName().substring(file.getName().lastIndexOf('.')+1);
+			BoardFile board= "gol".equals(ext)?BoardFile.getGolBoardFile():
+				asList("cell","cells").contains(ext)?BoardFile.getCellBoardFile():
+				asList("lif","life").contains(ext)?BoardFile.getLifeBoardFile():
+				"rle".equals(ext)?BoardFile.getRleBoardFile():
+				BoardFile.getGolBoardFile();
+
+				try {
+					game.saveBoard(board);
+					board.saveFile(file.toPath());
+					Alert alert = new Alert(AlertType.CONFIRMATION,"File "+file+" saved.",ButtonType.OK);
+					alert.show();
+
+				} catch (Exception e) {
+					e.printStackTrace();//IOException
+					Alert alert = new Alert(AlertType.ERROR,e.getMessage(),ButtonType.OK);
+					alert.show();
+				}
+
+		}
 	}
 
 	@FXML public void pause() {
