@@ -4,3 +4,6 @@ Label{
 	-fx-font-family: fxed,monospace;
 	-fx-font-weight: bold;
 }
+Canvas{
+	-fx-cursor: crosshair;
+}

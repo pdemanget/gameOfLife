@@ -13,6 +13,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -45,7 +46,9 @@ public class AppController {
 	ScheduledFuture<?> scheduled = null;
 	private File initialDirectory = new File(".");
 	@FXML ScrollPane scrollPane; 
-			
+	//private GameWorker gameWorker= new GameWorker(()->Platform.runLater( this::next));
+	private GameWorker gameWorker= new GameWorker(this::next);
+	
 	@FXML
 	public void initialize() {
 
@@ -57,16 +60,11 @@ public class AppController {
 		gContext.fillRect(0, 0, SCREENSIZE, SCREENSIZE);
 		scrollPane.setVvalue(0.5);
 		scrollPane.setHvalue(0.5);
-		scrollPane.setOnScroll(e->{
-			double sceneX = e.getSceneX();
-			System.out.println(e);
-		});
 		clear();
 		game.loadExample();
 		drawGrid();
 		
 		canvas.setOnMouseClicked(e->{
-			System.out.println(e);
 			int i= (int)(e.getX() /PIXEL_SIZE);
 			int j= (int)(e.getY()/PIXEL_SIZE);
 //			int i= (int)(e.getSceneX() /PIXEL_SIZE);
@@ -119,7 +117,12 @@ public class AppController {
 
 	@FXML
 	public void go() {
-		scheduled = executor.scheduleAtFixedRate(this::next, 1000, PERIOD, TimeUnit.MILLISECONDS);
+		if(! gameWorker.isRunning()) {
+			gameWorker.setDelay(200);
+			new Thread(gameWorker).start();
+		} else {
+			gameWorker.setDelay((int)(gameWorker.getDelay()*0.7));
+		}
 	}
 
 	@FXML
@@ -216,9 +219,7 @@ public class AppController {
 	}
 
 	@FXML public void pause() {
-		if(scheduled!=null) {
-			scheduled.cancel(true);
-		}
+		gameWorker.halt();
 	}
 	@FXML public void clear() {
 		pause();
@@ -231,7 +232,7 @@ public class AppController {
 
 
 	public void stop() {
-		executor.shutdownNow();
+		gameWorker.halt();
 	}
 
 }
