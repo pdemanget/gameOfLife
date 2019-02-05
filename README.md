@@ -28,12 +28,22 @@ http://www.conwaylife.com/wiki/Main_Page
 Use "file/open" to open any of the file previously downloaded
 Then run it step by step, or simply using "play"
 
+### build
+The build uses maven:
+
+    $ mvn install
+    $ java -jar
+
+### Evolution
+- [x] visual edition
+- [x] file saving
+- [ ] dynamic load pattern with buttons
+- [ ] other automat rules, reading file comments&headers
+
 ### References
-Le Jeu de la Vie — Science étonnante #49
-https://www.youtube.com/watch?v=S-W0NX97DB0
-epic conway's game of life
-https://www.youtube.com/watch?v=C2vgICfQawE&t=311s
+Here are some links to explain the "magic" of this "game".
 
-http://www.conwaylife.com/wiki/Main_Page
-
-~                                        
+- [Le Jeu de la Vie — Science étonnante #49](https://www.youtube.com/watch?v=S-W0NX97DB0)
+- [epic conway's game of life](https://www.youtube.com/watch?v=C2vgICfQawE&t=311s)
+- [Wiki](http://www.conwaylife.com/wiki/Main_Page)
+                                       
