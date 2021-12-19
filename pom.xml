@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>gol</groupId>
-    <artifactId>gol</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name/>
-    <description/>
-   <build>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>pdemanget</groupId>
+	<artifactId>gameOfLife</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name />
+	<description />
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.version>17</java.version>
+		<javafx.version>16</javafx.version>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<java.mainClass>pdemanget.gameoflife.App</java.mainClass>
+		<dest>${project.basedir}</dest>
+	</properties>
+	<build>
+
 		<resources>
 			<resource>
 				<directory>${project.build.sourceDirectory}</directory>
@@ -24,15 +34,6 @@
 		</resources>
 
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -67,6 +68,23 @@
 					</execution>
 				</executions>
 			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <release>${java.version}</release>
+                </configuration>
+            </plugin>
+
+			<plugin>
+				<groupId>org.openjfx</groupId>
+				<artifactId>javafx-maven-plugin</artifactId>
+				<version>0.0.8</version>
+				<configuration>
+					<mainClass>${java.mainClass}</mainClass>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -91,10 +109,28 @@
 			<scope>test</scope>
 		</dependency>
 		<!-- Support du SVG -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>de.codecentric.centerdevice</groupId> -->
-<!-- 			<artifactId>javafxsvg</artifactId> -->
-<!-- 			<version>1.1.0</version> -->
-<!-- 		</dependency> -->
+		<!-- 		<dependency> -->
+		<!-- 			<groupId>de.codecentric.centerdevice</groupId> -->
+		<!-- 			<artifactId>javafxsvg</artifactId> -->
+		<!-- 			<version>1.1.0</version> -->
+		<!-- 		</dependency> -->
+
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-controls</artifactId>
+			<version>${javafx.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-fxml</artifactId>
+			<version>${javafx.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-web</artifactId>
+			<version>${javafx.version}</version>
+		</dependency>
+
+
 	</dependencies>
 </project>

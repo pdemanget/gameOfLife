@@ -1,3 +1,6 @@
+# This build file is using Javen
+# For more information see 
+
 artifact: pdemanget:gameoflife
 description: Game of life in JavaFX
 name: Game of life in JavaFX
@@ -5,10 +8,10 @@ build:
  resources:
    - directory: ${project.build.sourceDirectory}
      includes:
-      - **/*.fxml
+      - "**/*.fxml"
    - directory: ${project.basedir}/src/main/resources
      includes:
-      - **/*
+      - "**/*"
 compile:
  - org.aerofx:aerofx:0.2
  #	to use @Inject :

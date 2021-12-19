@@ -46,4 +46,25 @@ Here are some links to explain the "magic" of this "game".
 - [Le Jeu de la Vie — Science étonnante #49](https://www.youtube.com/watch?v=S-W0NX97DB0)
 - [epic conway's game of life](https://www.youtube.com/watch?v=C2vgICfQawE&t=311s)
 - [Wiki](http://www.conwaylife.com/wiki/Main_Page)
+
+Upgrade to java 17
+==================
+ 1. add dependencies, plugin in pom.xml
+ 2. launch with right module
+ 3. run with mvn javafx:run
+ 
+ see example : /home/philippe/private/external/samples/CommandLine/Modular/Maven/hellofx/
+ https://github.com/openjfx/samples/tree/master/CommandLine/Modular/Maven
+
+1. 
+		  <dependency>
+		    <groupId>org.openjfx</groupId>
+		    <artifactId>javafx-controls</artifactId>
+		    <version>17</version>
+		  </dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-fxml</artifactId>
+			<version>17</version>
+		</dependency>
                                        
