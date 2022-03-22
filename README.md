@@ -2,6 +2,9 @@ Game of life
 ============
 
 JavaFx implementation of the famous Conway's "Game of life".
+see
+https://conwaylife.com/wiki/Main_Page
+
 
 ### What is "Game of life"
 It's an infinite grid with only 4 rules
@@ -46,12 +49,15 @@ Here are some links to explain the "magic" of this "game".
 - [Le Jeu de la Vie — Science étonnante #49](https://www.youtube.com/watch?v=S-W0NX97DB0)
 - [epic conway's game of life](https://www.youtube.com/watch?v=C2vgICfQawE&t=311s)
 - [Wiki](http://www.conwaylife.com/wiki/Main_Page)
+- [Dump files](https://conwaylife.com/patterns)
 
 Upgrade to java 17
 ==================
  1. add dependencies, plugin in pom.xml
  2. launch with right module
  3. run with mvn javafx:run
+ 4. add module
+ 5. build with jlink
  
  see example : /home/philippe/private/external/samples/CommandLine/Modular/Maven/hellofx/
  https://github.com/openjfx/samples/tree/master/CommandLine/Modular/Maven
@@ -67,4 +73,48 @@ Upgrade to java 17
 			<artifactId>javafx-fxml</artifactId>
 			<version>17</version>
 		</dependency>
+		
+4. add module		
+		module hellofx {
+    requires javafx.controls;
+    requires javafx.fxml;
+
+    opens pdemanget.gameoflife to javafx.fxml;
+    exports pdemanget.gameoflife;
+}
+5.mvn clean javafx:jlink
+
+The OpenJFX
+------------
+javaFX became openjfx and binaries must be installed!
+SEE https://openjfx.io/
+2 options: install the sdk OR use maven (recommanded and simplest)
+
+### MAVEN
+To run in developpement:
+
+ mvn clean javafx:run
+
+To create and run a custom JRE:
+   
+    mvn clean javafx:jlink
+    target/<your-app>/bin/launcher
+
+### troubleshoot
+It can be a little bit tricky to build for javafx:
+- check with a manual run on the jar: java --module-path $PATH_TO_FX --add-modules javafx.base,javafx.controls,javafx.fxml,javafx.swing, -jar 
+yourjar.jar, or with the classpath
+- remove unused import in FXML (it's removed by jlink, but needed by FxmlLoader (bug to report?)
+
+ 
+ 
+### SDK
+The procedure for manjaro
+search latest (j17) java-openjfx package (AUR installation) 
+pacman -Ql java-openjfx
+java --module-path /usr/lib/jvm/java-17-openjfx/ --add-modules=javafx.controls -jar target/gameOfLife-0.0.1-SNAPSHOT.jar
+
+Also see project examples:
+/home/philippe/private/external/samples/CommandLine/Modular/Maven/
+
                                        

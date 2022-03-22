@@ -41,7 +41,7 @@ public class App extends Application {
 //	    Injector.setModelOrService(this.getClass (),this);
 		stage.setTitle(metaApp.getTitle());
 
-		stage.getIcons().add(new Image(metaApp.getLogo()));
+		// stage.getIcons().add(new Image(metaApp.getLogo()));
 		
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(metaApp.getScreen()));
 		//Parent root = FXMLLoader.load(getClass().getResource(metaApp.getScreen()));
